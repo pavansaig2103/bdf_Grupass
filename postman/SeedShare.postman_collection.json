@@ -1,0 +1,649 @@
+{
+  "info": {
+    "name": "SeedShare Garden",
+    "description": "Run in order against a running API. Creates unique records and cleans up its own data.",
+    "schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+  },
+  "variable": [
+    {
+      "key": "baseUrl",
+      "value": "http://localhost:3000"
+    }
+  ],
+  "event": [
+    {
+      "listen": "prerequest",
+      "script": {
+        "type": "text/javascript",
+        "exec": [
+          "if (pm.info.requestName === 'Health check') pm.collectionVariables.set('runId', Date.now().toString() + Math.random().toString(16).slice(2));"
+        ]
+      }
+    }
+  ],
+  "item": [
+    {
+      "name": "Health check",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/health"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('API is healthy', () => pm.expect(pm.response.json().message).to.eql('SeedShare Garden API is running'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create gardener",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/gardeners",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Gardener\",\n  \"email\": \"garden-{{runId}}@example.com\",\n  \"phone\": \"9876543210\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('gardenerId', pm.response.json().gardener_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List gardeners",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/gardeners"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get gardener",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/gardeners/{{gardenerId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update gardener",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/gardeners/{{gardenerId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Updated Postman Gardener\",\n  \"email\": \"garden-{{runId}}@example.com\",\n  \"phone\": \"9876543210\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create plot",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/plots",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Plot {{runId}}\",\n  \"soil\": \"clay\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('plotId', pm.response.json().plot_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List plots",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/plots"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get plot",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/plots/{{plotId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Update plot",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/plots/{{plotId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"name\": \"Postman Plot {{runId}}\",\n  \"soil\": \"loam\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Soil search",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/plots?soil=LOAM"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Soil matches', () => { const rows = pm.response.json(); pm.expect(rows.length).to.be.above(0); rows.forEach(p => pm.expect(p.soil.toLowerCase()).to.eql('loam')); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignment sort asc",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/plots?sort=name&order=asc"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const names = pm.response.json().map(p => p.name.toLowerCase());",
+              "const sorted = [...names].sort((a,b) => a < b ? -1 : a > b ? 1 : 0);",
+              "pm.test('Names sorted correctly', () => pm.expect(names).to.eql(sorted));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignment sort desc",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/plots?sort=name&order=desc"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "const names = pm.response.json().map(p => p.name.toLowerCase());",
+              "const sorted = [...names].sort((a,b) => a < b ? -1 : a > b ? 1 : 0);",
+              "sorted.reverse();",
+              "pm.test('Names sorted correctly', () => pm.expect(names).to.eql(sorted));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Assignment invalid sort",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/plots?sort=colour"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 400', () => pm.response.to.have.status(400));",
+              "pm.test('Exact error', () => pm.expect(pm.response.json()).to.eql({error: 'Cannot sort by that field'}));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Soil with sorting",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/plots?soil=loam&sort=name&order=asc"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Create lease",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/leases",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"gardener_id\": \"{{gardenerId}}\",\n  \"plot_id\": \"{{plotId}}\",\n  \"status\": \"active\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('leaseId', pm.response.json().lease_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "List leases",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/leases"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Get lease",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/leases/{{leaseId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "JOIN lease details",
+      "request": {
+        "method": "GET",
+        "header": [],
+        "url": "{{baseUrl}}/leases/join"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Joined names and soil', () => { const row = pm.response.json().find(r => r.lease_id === Number(pm.collectionVariables.get('leaseId'))); pm.expect(row.gardener_name).to.eql('Updated Postman Gardener'); pm.expect(row.soil).to.eql('loam'); pm.expect(row.status).to.eql('active'); });"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Duplicate active lease rejected",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/leases",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"gardener_id\": \"{{gardenerId}}\",\n  \"plot_id\": \"{{plotId}}\",\n  \"status\": \"active\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));",
+              "pm.test('Allocation conflict', () => pm.expect(pm.response.json().error).to.eql('Plot already has an active lease'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Plot deletion blocked by history",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/plots/{{plotId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 409', () => pm.response.to.have.status(409));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Release lease using PUT",
+      "request": {
+        "method": "PUT",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/leases/{{leaseId}}",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"gardener_id\": \"{{gardenerId}}\",\n  \"plot_id\": \"{{plotId}}\",\n  \"status\": \"released\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));",
+              "pm.test('Released', () => pm.expect(pm.response.json().status).to.eql('released'));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Reallocate released plot",
+      "request": {
+        "method": "POST",
+        "header": [
+          {
+            "key": "Content-Type",
+            "value": "application/json"
+          }
+        ],
+        "url": "{{baseUrl}}/leases",
+        "body": {
+          "mode": "raw",
+          "raw": "{\n  \"gardener_id\": \"{{gardenerId}}\",\n  \"plot_id\": \"{{plotId}}\",\n  \"status\": \"active\"\n}",
+          "options": {
+            "raw": {
+              "language": "json"
+            }
+          }
+        }
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 201', () => pm.response.to.have.status(201));",
+              "pm.collectionVariables.set('nextLeaseId', pm.response.json().lease_id);"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete new lease",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/leases/{{nextLeaseId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete original lease (explicit cleanup)",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/leases/{{leaseId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete plot",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/plots/{{plotId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    },
+    {
+      "name": "Delete gardener",
+      "request": {
+        "method": "DELETE",
+        "header": [],
+        "url": "{{baseUrl}}/gardeners/{{gardenerId}}"
+      },
+      "event": [
+        {
+          "listen": "test",
+          "script": {
+            "type": "text/javascript",
+            "exec": [
+              "pm.test('HTTP 200', () => pm.response.to.have.status(200));"
+            ]
+          }
+        }
+      ]
+    }
+  ]
+}
